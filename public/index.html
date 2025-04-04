@@ -2,38 +2,140 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Оформление заявки | Flowers</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Цветочный магазин | Flowers</title>
   <link rel="stylesheet" href="bootstrap.min.css">
+  <style>
+    .card-img-top {
+      width: 100%;      /* Заставляем картинку растягиваться на всю ширину контейнера */
+      height: 250px;    /* Фиксированная высота */
+      object-fit: cover; /* Обеспечивает сохранение пропорций и заполнение области */
+    }
+  </style>
 </head>
-<body class="bg-light p-5">
+<body class="bg-light">
 
-  <div class="container">
-    <h2 class="mb-4">Оформить заявку на цветы</h2>
-    <form id="orderForm">
-      <div class="mb-3">
-        <label class="form-label">Имя клиента</label>
-        <input type="text" name="client_name" class="form-control" required>
+  <!-- Шапка -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-success mb-4">
+    <div class="container">
+      <a class="navbar-brand" href="#">🌸 Flowers</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#catalog">Каталог</a></li>
+          <li class="nav-item"><a class="nav-link" href="#order-form">Заказать</a></li>
+          <li class="nav-item"><a class="nav-link" href="order-status.html">Статус заказа</a></li>
+        </ul>
       </div>
-      <div class="mb-3">
-        <label class="form-label">Номер телефона</label>
-        <input type="text" name="phone_number" class="form-control" required>
+    </div>
+  </nav>
+
+  <!-- Каталог -->
+  <section class="container mb-5" id="catalog">
+    <h2 class="mb-4 text-center">💐 Каталог цветов</h2>
+    <div class="row g-4">
+      <!-- Карточка 1 -->
+      <div class="col-md-4">
+        <div class="card shadow-sm">
+          <img src="/public/img/Rose.jpg" class="card-img-top" alt="Розы">
+          <div class="card-body">
+            <h5 class="card-title">Розы</h5>
+            <p class="card-text">Классические красные розы — 300₽/шт.</p>
+          </div>
+        </div>
       </div>
-      <div class="mb-3">
-        <label class="form-label">Тип цветов</label>
-        <input type="text" name="flower_type" class="form-control" required>
+      <!-- Карточка 2 -->
+      <div class="col-md-4">
+        <div class="card shadow-sm">
+          <img src="/public/img/Tulips.jpg" class="card-img-top" alt="Тюльпаны">
+          <div class="card-body">
+            <h5 class="card-title">Тюльпаны</h5>
+            <p class="card-text">Весенние тюльпаны — 150₽/шт.</p>
+          </div>
+        </div>
       </div>
-      <div class="mb-3">
-        <label class="form-label">Количество</label>
-        <input type="number" name="quantity" class="form-control" required>
+      <!-- Карточка 3 -->
+      <div class="col-md-4">
+        <div class="card shadow-sm">
+          <img src="/public/img/Pions.jpg" class="card-img-top" alt="Пионы">
+          <div class="card-body">
+            <h5 class="card-title">Пионы</h5>
+            <p class="card-text">Пышные пионы — 250₽/шт.</p>
+          </div>
+        </div>
       </div>
-      <div class="mb-3">
-        <label class="form-label">Дата доставки</label>
-        <input type="date" name="delivery_date" class="form-control" required>
+      <!-- Карточка 4 -->
+      <div class="col-md-4">
+        <div class="card shadow-sm">
+          <img src="/public/img/Lilies.jpg" class="card-img-top" alt="Лилии">
+          <div class="card-body">
+            <h5 class="card-title">Лилии</h5>
+            <p class="card-text">Ароматные лилии — 200₽/шт.</p>
+          </div>
+        </div>
       </div>
-      <button type="submit" class="btn btn-primary">Отправить заявку</button>
-    </form>
-    <div id="message" class="mt-3"></div>
-  </div>
+      <!-- Карточка 5 -->
+      <div class="col-md-4">
+        <div class="card shadow-sm">
+          <img src="/public/img/Chrysanthemums.jpg" class="card-img-top" alt="Хризантемы">
+          <div class="card-body">
+            <h5 class="card-title">Хризантемы</h5>
+            <p class="card-text">Яркие хризантемы — 120₽/шт.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Карточка 6 -->
+      <div class="col-md-4">
+        <div class="card shadow-sm">
+          <img src="/public/img/Orchid.jpg " class="card-img-top" alt="Орхидеи">
+          <div class="card-body">
+            <h5 class="card-title">Орхидеи</h5>
+            <p class="card-text">Элегантные орхидеи — 350₽/шт.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Форма заказа -->
+  <section class="bg-white py-5" id="order-form">
+    <div class="container">
+      <h2 class="mb-4 text-center">📝 Оформить заказ</h2>
+      <form id="orderForm" class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">ФИО</label>
+          <input type="text" name="client_name" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Телефон</label>
+          <input type="tel" name="phone_number" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Тип цветов</label>
+          <select name="flower_type" class="form-select" required>
+            <option value="">Выберите</option>
+            <option value="Розы">Розы</option>
+            <option value="Тюльпаны">Тюльпаны</option>
+            <option value="Пионы">Пионы</option>
+            <option value="Лилии">Лилии</option>
+            <option value="Хризантемы">Хризантемы</option>
+            <option value="Орхидеи">Орхидеи</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Количество</label>
+          <input type="number" name="quantity" class="form-control" required>
+        </div>
+        <div class="col-12 text-center">
+          <button type="submit" class="btn btn-success btn-lg px-5">Отправить заявку</button>
+        </div>
+        <div id="message" class="text-center mt-3"></div>
+      </form>
+    </div>
+  </section>
 
   <script src="script.js"></script>
 </body>
