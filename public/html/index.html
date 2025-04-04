@@ -4,95 +4,109 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Цветочный магазин | Flowers</title>
-  <link rel="stylesheet" href="bootstrap.min.css">
-  <style>
-    .card-img-top {
-      width: 100%;      /* Заставляем картинку растягиваться на всю ширину контейнера */
-      height: 250px;    /* Фиксированная высота */
-      object-fit: cover; /* Обеспечивает сохранение пропорций и заполнение области */
-    }
-  </style>
+  <link rel="stylesheet" href="/public/bootstrap.min.css">
+  <link rel="stylesheet" href="/public/css/style.css">
 </head>
 <body class="bg-light">
 
-  <!-- Шапка -->
+  <!-- Навигация -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-success mb-4">
     <div class="container">
       <a class="navbar-brand" href="#">🌸 Flowers</a>
-      <div class="collapse navbar-collapse">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="#catalog">Каталог</a></li>
-          <li class="nav-item"><a class="nav-link" href="#order-form">Заказать</a></li>
-          <li class="nav-item"><a class="nav-link" href="order-status.html">Статус заказа</a></li>
+      <div class="collapse navbar-collapse justify-content-center">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link fw-bold text-white px-3 py-2 rounded hover-effect" href="#catalog">💐 Каталог</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fw-bold text-white px-3 py-2 rounded hover-effect" href="#order-form">📝 Заказать</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fw-bold text-white px-3 py-2 rounded hover-effect" href="#order-status">🔎 Статус</a>
+          </li>
+          
         </ul>
       </div>
     </div>
   </nav>
 
-  <!-- Каталог -->
-  <section class="container mb-5" id="catalog">
+   <!-- Каталог -->
+   <section class="container mb-5" id="catalog">
     <h2 class="mb-4 text-center">💐 Каталог цветов</h2>
     <div class="row g-4">
-      <!-- Карточка 1 -->
-      <div class="col-md-4">
+      <!-- Сюда вставляются карточки товаров (ты можешь вставить те, что у тебя были — структура та же) -->
+      <!-- Пример одной карточки: -->
+      <div class="col-sm-6 col-lg-4">
         <div class="card shadow-sm">
           <img src="/public/img/Rose.jpg" class="card-img-top" alt="Розы">
           <div class="card-body">
             <h5 class="card-title">Розы</h5>
             <p class="card-text">Классические красные розы — 300₽/шт.</p>
+            <p class="availability available">Есть в наличии</p>
+            <button class="btn btn-outline-secondary btn-sm toggle-availability">Изменить наличие</button>
           </div>
         </div>
       </div>
-      <!-- Карточка 2 -->
       <div class="col-md-4">
         <div class="card shadow-sm">
           <img src="/public/img/Tulips.jpg" class="card-img-top" alt="Тюльпаны">
           <div class="card-body">
             <h5 class="card-title">Тюльпаны</h5>
             <p class="card-text">Весенние тюльпаны — 150₽/шт.</p>
+            <p class="availability available">Есть в наличии</p>
+            <button class="btn btn-outline-secondary btn-sm toggle-availability">Изменить наличие</button>
           </div>
         </div>
       </div>
-      <!-- Карточка 3 -->
+
       <div class="col-md-4">
         <div class="card shadow-sm">
           <img src="/public/img/Pions.jpg" class="card-img-top" alt="Пионы">
           <div class="card-body">
             <h5 class="card-title">Пионы</h5>
             <p class="card-text">Пышные пионы — 250₽/шт.</p>
+            <p class="availability available">Есть в наличии</p>
+            <button class="btn btn-outline-secondary btn-sm toggle-availability">Изменить наличие</button>
           </div>
         </div>
       </div>
-      <!-- Карточка 4 -->
+
       <div class="col-md-4">
         <div class="card shadow-sm">
           <img src="/public/img/Lilies.jpg" class="card-img-top" alt="Лилии">
           <div class="card-body">
             <h5 class="card-title">Лилии</h5>
             <p class="card-text">Ароматные лилии — 200₽/шт.</p>
+            <p class="availability available">Есть в наличии</p>
+            <button class="btn btn-outline-secondary btn-sm toggle-availability">Изменить наличие</button>
           </div>
         </div>
       </div>
-      <!-- Карточка 5 -->
+
       <div class="col-md-4">
         <div class="card shadow-sm">
           <img src="/public/img/Chrysanthemums.jpg" class="card-img-top" alt="Хризантемы">
           <div class="card-body">
             <h5 class="card-title">Хризантемы</h5>
             <p class="card-text">Яркие хризантемы — 120₽/шт.</p>
+            <p class="availability available">Есть в наличии</p>
+            <button class="btn btn-outline-secondary btn-sm toggle-availability">Изменить наличие</button>
           </div>
         </div>
       </div>
-      <!-- Карточка 6 -->
+
       <div class="col-md-4">
         <div class="card shadow-sm">
-          <img src="/public/img/Orchid.jpg " class="card-img-top" alt="Орхидеи">
+          <img src="/public/img/Orchid.jpg" class="card-img-top" alt="Орхидеи">
           <div class="card-body">
             <h5 class="card-title">Орхидеи</h5>
             <p class="card-text">Элегантные орхидеи — 350₽/шт.</p>
+            <p class="availability available">Есть в наличии</p>
+            <button class="btn btn-outline-secondary btn-sm toggle-availability">Изменить наличие</button>
           </div>
         </div>
       </div>
+    </div>
     </div>
   </section>
 
@@ -137,6 +151,42 @@
     </div>
   </section>
 
-  <script src="script.js"></script>
+  <!-- Статус заказа -->
+  <section class="container my-5" id="order-status">
+    <h2 class="mb-4 text-center">🔎 Проверка статуса заказа</h2>
+
+    <!-- Форма для поиска -->
+    <form id="statusForm" class="row g-3 mb-5">
+      <div class="col-md-8">
+        <input type="email" name="email" class="form-control" placeholder="Введите вашу почту" required>
+      </div>
+      <div class="col-md-4">
+        <button type="submit" class="btn btn-success w-100">Узнать статус</button>
+      </div>
+    </form>
+
+    <!-- Результат поиска -->
+    <div id="result" class="card d-none shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">Информация о заказе</h5>
+        <p><strong>ФИО:</strong> <span id="resName"></span></p>
+        <p><strong>Телефон:</strong> <span id="resPhone"></span></p>
+        <p><strong>Цветы:</strong> <span id="resFlowers"></span></p>
+        <p><strong>Количество:</strong> <span id="resQuantity"></span></p>
+        <p><strong>Дата доставки:</strong> <span id="resDate"></span></p>
+        <p><strong>Статус:</strong> <span id="resStatus" class="badge bg-info text-dark"></span></p>
+      </div>
+    </div>
+
+    <!-- Сообщение об ошибке -->
+    <div id="notFound" class="alert alert-warning d-none mt-4" role="alert">
+      Заказ с такой почтой не найден. Попробуйте снова.
+    </div>
+  </section>
+
+ 
+  <!-- Скрипты -->
+  <script src="/public/js/script.js"></script>
+  <script src="/public/js/order-status.js"></script>
 </body>
 </html>
