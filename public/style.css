@@ -4,11 +4,7 @@
     object-fit: cover;
   }
   
-  .availability {
-    font-weight: bold;
-    margin-top: 10px;
-  }
-  
+ 
   .availability.available {
     color: green;
   }
@@ -19,11 +15,6 @@
   
   .navbar-nav {
     margin: 0 auto;
-  }
-  
-  .divider {
-    border-top: 2px solid #ccc;
-    margin: 60px 0;
   }
   
   /* Адаптивность */

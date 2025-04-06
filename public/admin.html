@@ -1,0 +1,36 @@
+<!-- public/admin.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Админ-панель</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <h1 class="mb-4">🛠️ Админ-панель</h1>
+    
+    <h3>Заявки</h3>
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped" id="applicationsTable">
+        <thead class="table-success">
+          <tr>
+            <th>ID Заявки</th>
+            <th>Клиент</th>
+            <th>Email</th>
+            <th>Телефон</th>
+            <th>Цветок</th>
+            <th>Количество</th>
+            <th>Дата</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- JS вставит строки сюда -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
