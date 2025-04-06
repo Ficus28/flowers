@@ -85,34 +85,55 @@ app.post('/api/orders', (req, res) => {
   });
 });
 
-// 🔍 API: Получение заказа по email
-app.get('/api/orders', (req, res) => {
-  const { email } = req.query;
+app.post('/api/orders', (req, res) => {
+  const { client_name, email, phone_number, flower_type, quantity } = req.body;
 
-  if (!email) {
-    return res.status(400).json({ message: 'Email обязателен' });
+  if (!client_name || !email || !phone_number || !flower_type || !quantity) {
+    return res.status(400).json({ message: 'Пожалуйста, заполните все поля.' });
   }
 
-  const sql = `
-    SELECT * FROM orders
-    WHERE email = ?
-    ORDER BY id DESC
-    LIMIT 1
-  `;
+  // 1. Найти или добавить клиента
+  const findClientSql = `SELECT id FROM clients WHERE email = ?`;
+  db.get(findClientSql, [email], (err, client) => {
+    if (err) return res.status(500).json({ message: 'Ошибка при поиске клиента' });
 
-  db.get(sql, [email], (err, row) => {
-    if (err) {
-      console.error('Ошибка при поиске заказа:', err.message);
-      return res.status(500).json({ message: 'Ошибка сервера при получении заказа' });
-    }
+    const insertClientAndContinue = (clientId) => {
+      // 2. Найти цветок по названию
+      const findFlowerSql = `SELECT id FROM flowers WHERE name = ?`;
+      db.get(findFlowerSql, [flower_type], (err, flower) => {
+        if (err || !flower) return res.status(400).json({ message: 'Такой цветок не найден' });
 
-    if (row) {
-      res.json(row);
+        // 3. Вставка в таблицу заявок
+        const insertAppSql = `
+          INSERT INTO application (flower_id, client_id)
+          VALUES (?, ?)
+        `;
+        db.run(insertAppSql, [flower.id, clientId], function (err) {
+          if (err) {
+            console.error('Ошибка при создании заявки:', err.message);
+            return res.status(500).json({ message: 'Ошибка при создании заявки' });
+          }
+
+          res.status(201).json({ message: 'Заявка успешно создана', applicationId: this.lastID });
+        });
+      });
+    };
+
+    if (client) {
+      insertClientAndContinue(client.id);
     } else {
-      res.status(404).json({ message: 'Заказ не найден' });
+      const insertClientSql = `
+        INSERT INTO clients (full_name, phone, email)
+        VALUES (?, ?, ?)
+      `;
+      db.run(insertClientSql, [client_name, phone_number, email], function (err) {
+        if (err) return res.status(500).json({ message: 'Ошибка при добавлении клиента' });
+        insertClientAndContinue(this.lastID);
+      });
     }
   });
 });
+
 // 🔍 API: Получение статуса заказа по email (для order-status.js)
 app.get('/api/order-status', (req, res) => {
   const { email } = req.query;
@@ -170,6 +191,39 @@ app.get('/api/applications', (req, res) => {
   });
 });
 
+app.get('/api/flowers', (req, res) => {
+  const sql = `SELECT * FROM flowers`;
+
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      console.error('Ошибка при получении цветов:', err.message);
+      return res.status(500).json({ message: 'Ошибка сервера' });
+    }
+    res.json(rows);
+  });
+});
+
+app.post('/api/flowers', (req, res) => {
+  const { name, quantity, description } = req.body;
+
+  if (!name || !quantity) {
+    return res.status(400).json({ message: 'Название и количество обязательны' });
+  }
+
+  const sql = `
+    INSERT INTO flowers (name, quantity, description)
+    VALUES (?, ?, ?)
+  `;
+
+  db.run(sql, [name, quantity, description || null], function (err) {
+    if (err) {
+      console.error('Ошибка при добавлении цветка:', err.message);
+      return res.status(500).json({ message: 'Ошибка сервера при добавлении цветка' });
+    }
+
+    res.status(201).json({ message: 'Цветок добавлен', flowerId: this.lastID });
+  });
+});
 
 
 // 🚀 Запуск сервера
