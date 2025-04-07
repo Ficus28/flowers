@@ -32,28 +32,6 @@
   </div>
 </nav>
 
-
-  <!-- Навигация
-  <nav class="navbar navbar-expand-lg navbar-dark bg-success mb-0">
-    <div class="container">
-      <a class="navbar-brand" href="#">🌸 Flowers</a>
-      <div class="collapse navbar-collapse justify-content-center">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link fw-bold text-white px-3 py-2 rounded hover-effect" href="#catalog">💐 Каталог</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link fw-bold text-white px-3 py-2 rounded hover-effect" href="#order-form">📝 Заказать</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link fw-bold text-white px-3 py-2 rounded hover-effect" href="#order-status">🔎 Статус</a>
-          </li>
-          
-        </ul>
-      </div>
-    </div>
-  </nav> -->
-
    <!-- Каталог -->
    <section class="py-5" id="catalog" style="background: linear-gradient(to right, #fffaf0, #ffe4e1);">
     <h2 class="mb-4 text-center">💐 Каталог цветов</h2>
@@ -151,16 +129,10 @@
           <label class="form-label">Телефон</label>
           <input type="tel" name="phone_number" class="form-control" required>
         </div>
-        <div class="col-md-6">
-          <label class="form-label">Тип цветов</label>
-          <select name="flower_type" class="form-select" required>
-            <option value="">Выберите</option>
-            <option value="Розы">Розы</option>
-            <option value="Тюльпаны">Тюльпаны</option>
-            <option value="Пионы">Пионы</option>
-            <option value="Лилии">Лилии</option>
-            <option value="Хризантемы">Хризантемы</option>
-            <option value="Орхидеи">Орхидеи</option>
+        <div class="mb-3">
+          <label for="flower_type" class="form-label">Выберите цветок</label>
+          <select class="form-select" name="flower_type" id="flowerSelect" required>
+            <option value="">Загрузка...</option>
           </select>
         </div>
         <div class="col-md-6">

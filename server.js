@@ -3,167 +3,152 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 
-// Создание папки database, если не существует
+const app = express();
+const PORT = 3000;
+
+// 📁 Создание папки базы данных
 const dbFolder = path.join(__dirname, 'database');
 if (!fs.existsSync(dbFolder)) {
   fs.mkdirSync(dbFolder);
 }
 
-const app = express();
-const PORT = 3000;
-
-// Подключение базы данных
-const dbPath = path.join(__dirname, 'database', 'flowers.db');
+// 📦 Подключение к SQLite
+const dbPath = path.join(dbFolder, 'flowers.db');
 const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    return console.error('❌ Ошибка подключения к БД:', err.message);
-  }
+  if (err) return console.error('❌ Ошибка подключения к БД:', err.message);
   console.log('✅ Подключено к базе данных SQLite');
 });
 
+// 📐 Создание таблиц
+db.serialize(() => {
+  db.run(`
+    CREATE TABLE IF NOT EXISTS flowers (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT,
+      price REAL,
+      quantity INTEGER NOT NULL
+    )
+  `);
 
-// 🌸 Таблица цветов
-db.run(`
-  CREATE TABLE IF NOT EXISTS flowers (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    quantity INTEGER NOT NULL,
-    description TEXT
-  )
-`);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS clients (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      full_name TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      email TEXT NOT NULL
+    )
+  `);
 
-// 👤 Таблица клиентов
-db.run(`
-  CREATE TABLE IF NOT EXISTS clients (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    full_name TEXT NOT NULL,
-    phone TEXT NOT NULL,
-    email TEXT NOT NULL
-  )
-`);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS application (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      flower_id INTEGER NOT NULL,
+      client_id INTEGER NOT NULL,
+      date TEXT DEFAULT CURRENT_DATE,
+      quantity INTEGER DEFAULT 1,
+      status TEXT DEFAULT 'Оформлен',
+      FOREIGN KEY (flower_id) REFERENCES flowers(id),
+      FOREIGN KEY (client_id) REFERENCES clients(id)
+    )
+  `);
 
-// 📄 Таблица заявок
-db.run(`
-  CREATE TABLE IF NOT EXISTS application (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    flower_id INTEGER NOT NULL,
-    client_id INTEGER NOT NULL,
-    date TEXT DEFAULT CURRENT_DATE,
-    FOREIGN KEY (flower_id) REFERENCES flowers(id),
-    FOREIGN KEY (client_id) REFERENCES clients(id)
-  )
-`);
+  // 🔐 Уникальный индекс для защиты от дублей
+  db.run(`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_application
+    ON application (client_id, flower_id, date)
+  `);
+});
 
-
-// Middleware
+// ⚙️ Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Статические файлы (папка public и HTML-файлы)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 🔽 API: Создание заказа
-app.post('/api/orders', (req, res) => {
-  const { client_name, email, phone_number, flower_type, quantity } = req.body;
+////////////////////////////
+// 🌸 Flowers API
+////////////////////////////
 
-  if (!client_name || !email || !phone_number || !flower_type || !quantity) {
-    return res.status(400).json({ message: 'Пожалуйста, заполните все поля.' });
+app.get('/api/flowers', (req, res) => {
+  db.all('SELECT * FROM flowers', (err, rows) => {
+    if (err) return res.status(500).json({ message: 'Ошибка сервера' });
+    res.json(rows);
+  });
+});
+
+app.get('/api/flowers/:id', (req, res) => {
+  db.get('SELECT * FROM flowers WHERE id = ?', [req.params.id], (err, row) => {
+    if (err) return res.status(500).json({ message: 'Ошибка сервера' });
+    if (!row) return res.status(404).json({ message: 'Цветок не найден' });
+    res.json(row);
+  });
+});
+
+app.post('/api/flowers', (req, res) => {
+  const { name, description, price, quantity } = req.body;
+
+  if (!name || quantity == null || price == null) {
+    return res.status(400).json({ message: 'Укажите название, цену и количество' });
   }
 
   const sql = `
-    INSERT INTO orders (client_name, email, phone_number, flower_type, quantity)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO flowers (name, description, price, quantity)
+    VALUES (?, ?, ?, ?)
   `;
 
-  db.run(sql, [client_name, email, phone_number, flower_type, quantity], function (err) {
+  db.run(sql, [name, description || '', price, quantity], function (err) {
     if (err) {
-      console.error('Ошибка при добавлении заказа:', err.message);
-      return res.status(500).json({ message: 'Ошибка сервера при создании заказа' });
+      console.error('Ошибка при добавлении цветка:', err.message);
+      return res.status(500).json({ message: 'Ошибка сервера' });
     }
-
-    res.status(201).json({ message: 'Заказ успешно создан', orderId: this.lastID });
+    res.status(201).json({ message: 'Цветок добавлен', flowerId: this.lastID });
   });
 });
 
-app.post('/api/orders', (req, res) => {
-  const { client_name, email, phone_number, flower_type, quantity } = req.body;
+app.put('/api/flowers/:id', (req, res) => {
+  const { name, description, price, quantity } = req.body;
+  const { id } = req.params;
 
-  if (!client_name || !email || !phone_number || !flower_type || !quantity) {
-    return res.status(400).json({ message: 'Пожалуйста, заполните все поля.' });
-  }
-
-  // 1. Найти или добавить клиента
-  const findClientSql = `SELECT id FROM clients WHERE email = ?`;
-  db.get(findClientSql, [email], (err, client) => {
-    if (err) return res.status(500).json({ message: 'Ошибка при поиске клиента' });
-
-    const insertClientAndContinue = (clientId) => {
-      // 2. Найти цветок по названию
-      const findFlowerSql = `SELECT id FROM flowers WHERE name = ?`;
-      db.get(findFlowerSql, [flower_type], (err, flower) => {
-        if (err || !flower) return res.status(400).json({ message: 'Такой цветок не найден' });
-
-        // 3. Вставка в таблицу заявок
-        const insertAppSql = `
-          INSERT INTO application (flower_id, client_id)
-          VALUES (?, ?)
-        `;
-        db.run(insertAppSql, [flower.id, clientId], function (err) {
-          if (err) {
-            console.error('Ошибка при создании заявки:', err.message);
-            return res.status(500).json({ message: 'Ошибка при создании заявки' });
-          }
-
-          res.status(201).json({ message: 'Заявка успешно создана', applicationId: this.lastID });
-        });
-      });
-    };
-
-    if (client) {
-      insertClientAndContinue(client.id);
-    } else {
-      const insertClientSql = `
-        INSERT INTO clients (full_name, phone, email)
-        VALUES (?, ?, ?)
-      `;
-      db.run(insertClientSql, [client_name, phone_number, email], function (err) {
-        if (err) return res.status(500).json({ message: 'Ошибка при добавлении клиента' });
-        insertClientAndContinue(this.lastID);
-      });
-    }
-  });
-});
-
-// 🔍 API: Получение статуса заказа по email (для order-status.js)
-app.get('/api/order-status', (req, res) => {
-  const { email } = req.query;
-
-  if (!email) {
-    return res.status(400).json({ message: 'Email обязателен' });
+  if (!name || quantity === undefined || price === undefined) {
+    return res.status(400).json({ message: 'Все поля обязательны: name, price, quantity' });
   }
 
   const sql = `
-    SELECT * FROM orders
-    WHERE email = ?
-    ORDER BY id DESC
-    LIMIT 1
+    UPDATE flowers
+    SET name = ?, description = ?, price = ?, quantity = ?
+    WHERE id = ?
   `;
 
-  db.get(sql, [email], (err, row) => {
+  db.run(sql, [name, description || '', price, quantity, id], function (err) {
     if (err) {
-      console.error('Ошибка при получении статуса заказа:', err.message);
-      return res.status(500).json({ message: 'Ошибка сервера при получении статуса' });
+      console.error('❌ Ошибка при обновлении цветка:', err.message);
+      return res.status(500).json({ message: 'Ошибка сервера при обновлении цветка' });
     }
-
-    if (row) {
-      res.json(row);
-    } else {
-      res.status(404).json({ message: 'Заказ не найден' });
+    if (this.changes === 0) {
+      return res.status(404).json({ message: 'Цветок не найден' });
     }
+    res.json({ message: '✅ Цветок успешно обновлён' });
   });
 });
 
-// 📦 Получение всех заявок для админки
+app.delete('/api/flowers/:id', (req, res) => {
+  const { id } = req.params;
+  db.run('DELETE FROM flowers WHERE id = ?', [id], function (err) {
+    if (err) {
+      console.error('Ошибка удаления:', err.message);
+      return res.status(500).json({ message: 'Ошибка сервера' });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ message: 'Цветок не найден' });
+    }
+    res.json({ message: 'Цветок удалён' });
+  });
+});
+
+////////////////////////////
+// 📄 Applications (заявки)
+////////////////////////////
+
 app.get('/api/applications', (req, res) => {
   const sql = `
     SELECT 
@@ -183,50 +168,122 @@ app.get('/api/applications', (req, res) => {
 
   db.all(sql, [], (err, rows) => {
     if (err) {
-      console.error('Ошибка при получении заявок:', err.message);
-      return res.status(500).json({ message: 'Ошибка сервера при получении заявок' });
-    }
-
-    res.json(rows);
-  });
-});
-
-app.get('/api/flowers', (req, res) => {
-  const sql = `SELECT * FROM flowers`;
-
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      console.error('Ошибка при получении цветов:', err.message);
+      console.error('Ошибка получения заявок:', err.message);
       return res.status(500).json({ message: 'Ошибка сервера' });
     }
     res.json(rows);
   });
 });
 
-app.post('/api/flowers', (req, res) => {
-  const { name, quantity, description } = req.body;
+////////////////////////////
+// 🧾 Заказы (создание заявки)
+////////////////////////////
 
-  if (!name || !quantity) {
-    return res.status(400).json({ message: 'Название и количество обязательны' });
+app.post('/api/orders', (req, res) => {
+  const { client_name, email, phone_number, flower_type, quantity } = req.body;
+
+  if (!client_name || !email || !phone_number || !flower_type || !quantity) {
+    return res.status(400).json({ message: 'Пожалуйста, заполните все поля' });
   }
 
-  const sql = `
-    INSERT INTO flowers (name, quantity, description)
-    VALUES (?, ?, ?)
-  `;
+  const qty = parseInt(quantity);
+  const findClientSql = `SELECT id FROM clients WHERE email = ?`;
 
-  db.run(sql, [name, quantity, description || null], function (err) {
-    if (err) {
-      console.error('Ошибка при добавлении цветка:', err.message);
-      return res.status(500).json({ message: 'Ошибка сервера при добавлении цветка' });
+  db.get(findClientSql, [email], (err, client) => {
+    if (err) return res.status(500).json({ message: 'Ошибка поиска клиента' });
+
+    const handleCreateApplication = (clientId) => {
+      const findFlowerSql = `SELECT id FROM flowers WHERE name = ?`;
+      db.get(findFlowerSql, [flower_type], (err, flower) => {
+        if (err || !flower) {
+          return res.status(400).json({ message: 'Цветок не найден' });
+        }
+
+        const insertAppSql = `
+          INSERT INTO application (flower_id, client_id, quantity, status)
+          VALUES (?, ?, ?, ?)
+        `;
+
+        db.run(insertAppSql, [flower.id, clientId, qty, 'Оформлен'], function (err) {
+          if (err && err.message.includes('UNIQUE')) {
+            return res.status(409).json({ message: 'Заявка уже существует на сегодня' });
+          }
+          if (err) {
+            console.error('Ошибка создания заявки:', err.message);
+            return res.status(500).json({ message: 'Ошибка сервера' });
+          }
+          res.status(201).json({ message: '✅ Заявка успешно создана', applicationId: this.lastID });
+        });
+      });
+    };
+
+    if (client) {
+      handleCreateApplication(client.id);
+    } else {
+      const insertClientSql = `
+        INSERT INTO clients (full_name, phone, email)
+        VALUES (?, ?, ?)
+      `;
+      db.run(insertClientSql, [client_name, phone_number, email], function (err) {
+        if (err) return res.status(500).json({ message: 'Ошибка добавления клиента' });
+        handleCreateApplication(this.lastID);
+      });
     }
-
-    res.status(201).json({ message: 'Цветок добавлен', flowerId: this.lastID });
   });
 });
 
+////////////////////////////
+// 🔍 Проверка статуса заказа по email
+////////////////////////////
 
-// 🚀 Запуск сервера
+app.get('/api/order-status', (req, res) => {
+  const { email } = req.query;
+
+  if (!email) return res.status(400).json({ message: 'Email обязателен' });
+
+  const sql = `
+    SELECT 
+      clients.full_name AS client_name,
+      clients.phone AS phone_number,
+      flowers.name AS flower_type,
+      application.quantity,
+      application.date AS delivery_date,
+      application.status
+    FROM application
+    JOIN clients ON application.client_id = clients.id
+    JOIN flowers ON application.flower_id = flowers.id
+    WHERE clients.email = ?
+    ORDER BY application.id DESC
+    LIMIT 1
+  `;
+
+  db.get(sql, [email], (err, row) => {
+    if (err) {
+      console.error('Ошибка при получении статуса:', err.message);
+      return res.status(500).json({ message: 'Ошибка сервера' });
+    }
+
+    if (!row) return res.status(404).json({ message: 'Заявка не найдена' });
+
+    res.json(row);
+  });
+});
+
+////////////////////////////
+// 👥 Получить всех клиентов
+////////////////////////////
+
+app.get('/api/clients', (req, res) => {
+  db.all('SELECT * FROM clients', (err, rows) => {
+    if (err) return res.status(500).json({ message: 'Ошибка сервера' });
+    res.json(rows);
+  });
+});
+
+////////////////////////////
+// 🚀 Старт сервера
+////////////////////////////
+
 app.listen(PORT, () => {
   console.log(`🚀 Сервер запущен: http://localhost:${PORT}`);
 });
