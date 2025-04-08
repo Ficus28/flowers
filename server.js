@@ -245,60 +245,6 @@ app.post('/api/orders', (req, res) => {
   });
 });
 
-
-// app.post('/api/orders', (req, res) => {
-//   const { client_name, email, phone_number, flower_type, quantity } = req.body;
-
-//   if (!client_name || !email || !phone_number || !flower_type || !quantity) {
-//     return res.status(400).json({ message: 'Пожалуйста, заполните все поля' });
-//   }
-
-//   const qty = parseInt(quantity);
-//   const findClientSql = `SELECT id FROM clients WHERE email = ?`;
-
-//   db.get(findClientSql, [email], (err, client) => {
-//     if (err) return res.status(500).json({ message: 'Ошибка поиска клиента' });
-
-//     const handleCreateApplication = (clientId) => {
-//       const findFlowerSql = `SELECT id FROM flowers WHERE name = ?`;
-//       db.get(findFlowerSql, [flower_type], (err, flower) => {
-//         if (err || !flower) {
-//           return res.status(400).json({ message: 'Цветок не найден' });
-//         }
-
-//         const insertAppSql = `
-//           INSERT INTO application (flower_id, client_id, quantity, status)
-//           VALUES (?, ?, ?, ?)
-//         `;
-
-//         db.run(insertAppSql, [flower.id, clientId, qty, 'Оформлен'], function (err) {
-//           if (err && err.message.includes('UNIQUE')) {
-//             return res.status(409).json({ message: 'Заявка уже существует на сегодня' });
-//           }
-//           if (err) {
-//             console.error('Ошибка создания заявки:', err.message);
-//             return res.status(500).json({ message: 'Ошибка сервера' });
-//           }
-//           res.status(201).json({ message: '✅ Заявка успешно создана', applicationId: this.lastID });
-//         });
-//       });
-//     };
-
-//     if (client) {
-//       handleCreateApplication(client.id);
-//     } else {
-//       const insertClientSql = `
-//         INSERT INTO clients (full_name, phone, email)
-//         VALUES (?, ?, ?)
-//       `;
-//       db.run(insertClientSql, [client_name, phone_number, email], function (err) {
-//         if (err) return res.status(500).json({ message: 'Ошибка добавления клиента' });
-//         handleCreateApplication(this.lastID);
-//       });
-//     }
-//   });
-// });
-
 ////////////////////////////
 // 🔍 Проверка статуса заказа по email
 ////////////////////////////
