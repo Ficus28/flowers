@@ -36,8 +36,6 @@
    <section class="py-5" id="catalog" style="background: linear-gradient(to right, #fffaf0, #ffe4e1);">
     <h2 class="mb-4 text-center">💐 Каталог цветов</h2>
     <div class="row g-4">
-      <!-- Сюда вставляются карточки товаров (ты можешь вставить те, что у тебя были — структура та же) -->
-      <!-- Пример одной карточки: -->
       <div class="col-sm-6 col-lg-4">
         <div class="card shadow-sm">
           <img src="/img/Rose.jpg" class="card-img-top" alt="Розы">
@@ -113,39 +111,42 @@
   </section>
 
   <!-- Форма заказа -->
-  <section class="py-5" id="order-form" style="background-image: url('/public/img/fon.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-    <div class="container">
-      <h2 class="mb-4 text-center">📝 Оформить заказ</h2>
-      <form id="orderForm" class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label">ФИО</label>
-          <input type="text" name="client_name" class="form-control" required>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Email</label>
-          <input type="email" name="email" class="form-control" required>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Телефон</label>
-          <input type="tel" name="phone_number" class="form-control" required>
-        </div>
-        <div class="mb-3">
-          <label for="flower_type" class="form-label">Выберите цветок</label>
-          <select class="form-select" name="flower_type" id="flowerSelect" required>
-            <option value="">Загрузка...</option>
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Количество</label>
-          <input type="number" name="quantity" class="form-control" required>
-        </div>
-        <div class="col-12 text-center">
-          <button type="submit" class="btn btn-success btn-lg px-5">Отправить заявку</button>
-        </div>
-        <div id="message" class="text-center mt-3"></div>
-      </form>
-    </div>
-  </section>
+<section class="py-5" id="order-form" style="background-image: url('/public/img/fon.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+  <div class="container">
+    <h2 class="mb-4 text-center">📝 Оформить заказ</h2>
+    <form id="orderForm" class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">ФИО</label>
+        <input type="text" name="client_name" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Телефон</label>
+        <input type="tel" name="phone_number" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label for="flowerSelect" class="form-label">Выберите цветок</label>
+        <select class="form-select" name="flower_type" id="flowerSelect" required>
+          <option value="">Загрузка...</option>
+        </select>
+        <span id="flowerStock" style="margin-left: 10px; font-weight: bold;"></span> <!-- Остаток цветков -->
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Количество</label>
+        <input type="number" name="quantity" id="quantity" class="form-control" min="1" value="1" required>
+        <span id="totalPrice" style="margin-left: 10px; font-weight: bold;"></span> <!-- Сумма заказа -->
+      </div>
+      <div class="col-12 text-center">
+        <button type="submit" class="btn btn-success btn-lg px-5">Отправить заявку</button>
+      </div>
+      <div id="message" class="text-center mt-3"></div>
+    </form>
+  </div>
+</section>
+
 
   <!-- Статус заказа -->
   <section class="py-5" id="order-status" style="background: linear-gradient(to right, #f0f8ff, #e6e6fa);">
