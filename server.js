@@ -214,7 +214,6 @@ app.post('/api/orders', (req, res) => {
             INSERT INTO application (flower_id, client_id, quantity, status)
             VALUES (?, ?, ?, 'Оформлен')
           `;
-
           db.run(insertAppSql, [flower.id, clientId, qty], function (err) {
             if (err && err.message.includes('UNIQUE')) {
               return res.status(409).json({ message: 'Заявка уже существует на сегодня' });
@@ -223,13 +222,11 @@ app.post('/api/orders', (req, res) => {
               console.error('❌ Ошибка создания заявки:', err.message);
               return res.status(500).json({ message: 'Ошибка сервера при создании заявки' });
             }
-
             res.status(201).json({ message: '✅ Заявка успешно создана' });
           });
         });
       });
     };
-
     if (client) {
       handleCreateApplication(client.id);
     } else {
@@ -251,9 +248,7 @@ app.post('/api/orders', (req, res) => {
 
 app.get('/api/order-status', (req, res) => {
   const { email } = req.query;
-
   if (!email) return res.status(400).json({ message: 'Email обязателен' });
-
   const sql = `
     SELECT 
       clients.full_name AS client_name,
@@ -269,15 +264,12 @@ app.get('/api/order-status', (req, res) => {
     ORDER BY application.id DESC
     LIMIT 1
   `;
-
   db.get(sql, [email], (err, row) => {
     if (err) {
       console.error('Ошибка при получении статуса:', err.message);
       return res.status(500).json({ message: 'Ошибка сервера' });
     }
-
     if (!row) return res.status(404).json({ message: 'Заявка не найдена' });
-
     res.json(row);
   });
 });

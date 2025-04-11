@@ -1,15 +1,11 @@
-// public/admin.js
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-    //   const res = await fetch('/api/admin-data');
       const res = await fetch('/api/applications');
       const data = await res.json();
-  
+
       const tbody = document.querySelector('#applicationsTable tbody');
       tbody.innerHTML = '';
 
-
-  
       data.forEach(app => {
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -23,8 +19,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
         tbody.appendChild(row);
       });
-      
-  
     } catch (err) {
       console.error('Ошибка загрузки заявок:', err);
     }
